@@ -84,6 +84,9 @@ services:
           echo "ADVERTENCIA: No existe /backups/filestore/$$DB_NAME"
         fi
 
+        echo "Arreglando permisos de /var/lib/odoo..."
+        chmod -R a+rwX /var/lib/odoo
+
         echo "Restore completado."
     restart: "no"
 
