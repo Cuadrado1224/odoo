@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15
+    container_name: proyectoGC-db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+    volumes:
+      - odoo-GC-db-data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: always
+
+  odoo:
+    image: odoo:16
+    container_name: proyectoGC
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8888:8069"
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - odoo-GC-web-data:/var/lib/odoo
+      - ./addons:/mnt/extra-addons
+      - ./backups:/backups
+    restart: always
+
+volumes:
+  odoo-GC-db-data:
+  odoo-GC-web-data:
